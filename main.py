@@ -6,7 +6,7 @@ from typing import List, Dict, Optional
 app = FastAPI()
 
 # ========= CONFIG =========
-PASSWORD = "Mr$Z@MPdNKY][Ymw6Ee@"  # 🔒 CHANGE THIS
+PASSWORD = "Mr$Z@MPdNKY][Ymw6Ee@"  # 🔒 CHANGE THIS TO YOUR SECRET PASSWORD
 APP_TITLE = "CorePay TempMail"
 DOMAIN = "corepaytg.online"
 POLL_INTERVAL_MS = 3000  # auto-refresh every 3 seconds
@@ -291,6 +291,7 @@ async def login_page(request: Request, error: Optional[str] = None):
 async def auth(password: str = Form(...)):
     if password == PASSWORD:
         resp = RedirectResponse("/inbox", status_code=302)
+        # secure cookie so only people with this cookie can see inbox
         resp.set_cookie("auth", PASSWORD, httponly=True, secure=True)
         return resp
     return RedirectResponse("/?error=Wrong+password", status_code=302)
@@ -389,7 +390,7 @@ async def inbox_page(request: Request):
     return html_page(body, title="Inbox · " + APP_TITLE)
 
 
-# ---------- JSON API (used by JS auto-refresh) ----------
+# ---------- JSON API used by JS auto-refresh ----------
 
 @app.get("/api/inbox")
 async def api_inbox(request: Request):
